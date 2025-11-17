@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Unit {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  plate         String?
+  mechanic      String
+  totalMiles    Float?              @default(0)
+  fuelRecords   FuelRecord[]
+  maintenance   MaintenanceRecord[]
+  inventory     InventoryItem[]
+}
+
+model FuelRecord {
+  id         Int      @id @default(autoincrement())
+  unitId     Int
+  date       DateTime @default(now())
+  litersOrGallons Float
+  pricePerUnit    Float
+  totalCost       Float
+  odometer        Float?
+  unit       Unit     @relation(fields: [unitId], references: [id])
+}
+
+model MaintenanceRecord {
+  id          Int      @id @default(autoincrement())
+  unitId      Int
+  date        DateTime @default(now())
+  description String
+  cost        Float
+  unit        Unit     @relation(fields: [unitId], references: [id])
+}
+
+model InventoryItem {
+  id       Int     @id @default(autoincrement())
+  unitId   Int
+  item     String
+  quantity Int
+  unit     Unit    @relation(fields: [unitId], references: [id])
+}
